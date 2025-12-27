@@ -84,22 +84,10 @@ def user_input_form(df: pd.DataFrame) -> pd.DataFrame:
 
 def main():
     st.title("Diabetes Risk Prediction")
-    st.write(
-        "Train a quick model from the Kaggle diabetes dataset and run individual predictions "
-        "to estimate diabetes risk."
-    )
+    st.write("Enter patient measurements to estimate diabetes risk.")
 
     df = load_data()
-    model, val_acc = train_model(df)
-
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        st.subheader("Dataset Preview")
-        st.dataframe(df.head())
-    with col2:
-        st.subheader("Validation Accuracy")
-        st.metric(label="Accuracy (holdout)", value=f"{val_acc*100:.2f}%")
-
+    model, _ = train_model(df)
     user_df = user_input_form(df)
 
     st.subheader("Prediction")
@@ -111,18 +99,6 @@ def main():
         st.caption(f"Estimated probability of diabetes: {proba*100:.2f}%")
     else:
         st.info("Adjust measurements in the sidebar, then click Predict.")
-
-    with st.expander("Feature notes"):
-        st.markdown(
-            "- Pregnancies: Number of times pregnant.\n"
-            "- Glucose: Plasma glucose concentration.\n"
-            "- BloodPressure: Diastolic blood pressure (mm Hg).\n"
-            "- SkinThickness: Triceps skin fold thickness (mm).\n"
-            "- Insulin: 2-Hour serum insulin (mu U/ml).\n"
-            "- BMI: Body mass index (weight/height^2).\n"
-            "- DPF: Diabetes pedigree function.\n"
-            "- Age: Age in years."
-        )
 
 
 if __name__ == "__main__":
