@@ -65,19 +65,21 @@ def user_input_form(df: pd.DataFrame) -> pd.DataFrame:
 
     stats = df[feature_cols].describe()
     defaults = stats.loc["mean"]
-    mins = stats.loc["min"]
-    maxs = stats.loc["max"]
 
     inputs = {}
     for col in feature_cols:
         step = 0.1 if col in {"BMI", "DPF", "Glucose", "BloodPressure"} else 1.0
-        inputs[col] = st.sidebar.number_input(
-            col,
-            min_value=float(mins[col]),
-            max_value=float(maxs[col]),
-            value=float(defaults[col]),
-            step=step,
-        )
+        # Keep data-driven bounds for most features, but allow unrestricted BMI and Age
+        number_kwargs = {
+            "label": col,
+            "value": float(defaults[col]),
+            "step": step,
+        }
+        if col not in {"BMI", "Age"}:
+            number_kwargs["min_value"] = float(stats.loc["min", col])
+            number_kwargs["max_value"] = float(stats.loc["max", col])
+
+        inputs[col] = st.sidebar.number_input(**number_kwargs)
 
     return pd.DataFrame([inputs], columns=feature_cols)
 
